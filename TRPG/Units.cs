@@ -49,7 +49,7 @@ namespace Game.Units
             }
         }
     }
-    public abstract class Unit : IDamageable
+    public abstract class Unit
     {
         public string Name { get; protected set; }
         public Stat MaxHp { get; protected set; }
