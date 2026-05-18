@@ -1,0 +1,26 @@
+﻿[
+	{
+		"Id": "기사",
+		"MaxHpBonus": 150,
+		"AtkBonus": 6,
+		"DefBonus": 9,
+		"SpdBonus": 3,
+		"CritBonus": 10
+	},
+	{
+		"Id": "도적",
+		"MaxHpBonus": 120,
+		"AtkBonus": 7,
+		"DefBonus": 3,
+		"SpdBonus": 9,
+		"CritBonus": 35
+	},
+	{
+		"Id": "마법사",
+		"MaxHpBonus": 110,
+		"AtkBonus": 11,
+		"DefBonus": 2,
+		"SpdBonus": 5,
+		"CritBonus": 12
+	}
+]
