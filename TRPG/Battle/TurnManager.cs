@@ -4,28 +4,37 @@ namespace Game.Battle
 {
     /*
     [TurnManager]
-    ÀüÅõ ½Ã ÅÏ ¼ø¼­¸¦ °ü¸®ÇÏ´Â ¿ªÇÒÀ» ÇÏ´Â Å¬·¡½º
+    ì „íˆ¬ ì‹œ í„´ ìˆœì„œë¥¼ ê´€ë¦¬í•˜ëŠ” ì—­í• ì„ í•˜ëŠ” í´ë˜ìŠ¤
      */
     class TurnManager
     {
         private Queue<Unit> turnQueue = new Queue<Unit>();
+        private int actedCount = 0; // í˜„ì¬ í„´ì—ì„œ í–‰ë™í•œ ìœ ë‹› ìˆ˜ë¥¼ ë‚˜íƒ€ëƒ„
+        private int AliveUnitCount = 0; // í˜„ì¬ í„´ì—ì„œ ì‚´ì•„ìˆëŠ” ìœ ë‹› ìˆ˜ë¥¼ ë‚˜íƒ€ëƒ„
+        public bool IsRoundFinished { get; private set; } = false; // ë¼ìš´ë“œê°€ ëë‚¬ëŠ”ì§€ ì—¬ë¶€ë¥¼ ë‚˜íƒ€ëƒ„
+
+        public void IncreaseActedCount()
+        {
+            actedCount++;
+        }
 
         public void TurnSetup(List<Unit> units)
         {
-            // ÅÏ ¼ø¼­¸¦ ½ºÇÇµå¿¡ µû¶ó °áÁ¤
-            // ¸®½ºÆ®¿¡ ÀÖ´Â À¯´ÖµéÀ» ½ºÇÇµå ¼øÀ¸·Î Á¤·ÄÇÏ¿© Å¥¿¡ ³Ö´Â´Ù 
+            // í„´ ìˆœì„œë¥¼ ìŠ¤í”¼ë“œì— ë”°ë¼ ê²°ì •
+            // ë¦¬ìŠ¤íŠ¸ì— ìˆëŠ” ìœ ë‹›ë“¤ì„ ìŠ¤í”¼ë“œ ìˆœìœ¼ë¡œ ì •ë ¬í•˜ì—¬ íì— ë„£ëŠ”ë‹¤ 
             List<Unit> sortedUnits = units.OrderByDescending(u => u.Spd.TotalStat).ToList();
             turnQueue = new Queue<Unit>(sortedUnits);
+            AliveUnitCount = turnQueue.Count;
         }
 
-        // ´ÙÀ½ ÅÏÀ» ÁøÇàÇÏ´Â ¸Ş¼­µå
-        // ÇöÀç ÅÏÀÎ À¯´ÖÀ» Å¥¿¡¼­ ²¨³¿
-        // ¸¸¾à Å¥°¡ ºñ¾îÀÖ´Ù¸é nullÀ» ¹İÈ¯
+        // ë‹¤ìŒ í„´ì„ ì§„í–‰í•˜ëŠ” ë©”ì„œë“œ
+        // í˜„ì¬ í„´ì¸ ìœ ë‹›ì„ íì—ì„œ êº¼ëƒ„
+        // ë§Œì•½ íê°€ ë¹„ì–´ìˆë‹¤ë©´ nullì„ ë°˜í™˜
         public Unit? NextTurn()
         {
             if (turnQueue.Count == 0)
             {
-                return null; // ÅÏÀÌ ¾øÀ¸¸é null ¹İÈ¯
+                return null; // í„´ì´ ì—†ìœ¼ë©´ null ë°˜í™˜
             }
 
             Unit currentUnit = turnQueue.Dequeue();
@@ -47,6 +56,20 @@ namespace Game.Battle
             }
 
             turnQueue = newQueue;
+            AliveUnitCount = turnQueue.Count;
+        }
+
+        public void CheckRoundFinished()
+        {
+            if (actedCount >= AliveUnitCount)
+            {
+                IsRoundFinished = true;
+                actedCount = 0; // í–‰ë™í•œ ìœ ë‹› ìˆ˜ ì´ˆê¸°í™”
+            }
+            else
+            {
+                IsRoundFinished = false;
+            }
         }
     }
 }

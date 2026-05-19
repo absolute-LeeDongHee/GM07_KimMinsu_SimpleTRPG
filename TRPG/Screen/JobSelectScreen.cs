@@ -35,24 +35,25 @@ namespace Game.Screen
         {
             Console.Clear();
             
-            Console.WriteLine("=== Á÷¾÷ ¼±ÅÃ ===");
+            Console.WriteLine("=== ì§ì—… ì„ íƒ ===");
             for (int i = 0; i < jobList.Count; i++)
             {
                 string cursor = (i == selectedIndex) ? ">" : " ";
                 Console.WriteLine($"{cursor} {jobList[i].Id}");
             }
             Console.WriteLine();
-            Console.WriteLine("===Ä³¸¯ÅÍ ±âº» ´É·ÂÄ¡===");
+            Console.WriteLine("===ìºë¦­í„° ê¸°ë³¸ ëŠ¥ë ¥ì¹˜===");
             JobData selectedJob = jobList[selectedIndex];
-            Console.WriteLine($"Á÷¾÷: {selectedJob.Id}");
-            Console.WriteLine($"Ã¼·Â: {selectedJob.MaxHpBonus}");
-            Console.WriteLine($"°ø°İ·Â: {selectedJob.AtkBonus}");
-            Console.WriteLine($"¹æ¾î·Â: {selectedJob.DefBonus}");
-            Console.WriteLine($"¼Óµµ: {selectedJob.SpdBonus}");
-            Console.WriteLine($"Ä¡¸íÅ¸ È®·ü: {selectedJob.CritBonus}%");
+            Console.WriteLine($"ì§ì—…: {selectedJob.Id}");
+            Console.WriteLine($"ì²´ë ¥: {selectedJob.MaxHpBonus}");
+            Console.WriteLine($"ë§ˆë‚˜: {selectedJob.MaxMpBonus}");
+            Console.WriteLine($"ê³µê²©ë ¥: {selectedJob.AtkBonus}");
+            Console.WriteLine($"ë°©ì–´ë ¥: {selectedJob.DefBonus}");
+            Console.WriteLine($"ì†ë„: {selectedJob.SpdBonus}");
+            Console.WriteLine($"ì¹˜ëª…íƒ€ í™•ë¥ : {selectedJob.CritBonus}%");
 
             Console.WriteLine();
-            Console.WriteLine("¹æÇâÅ°: ÀÌµ¿ / Enter: ¼±ÅÃ È®Á¤ / ESC: ¸ŞÀÎ ¸Ş´º·Î µ¹¾Æ°¡±â");
+            Console.WriteLine("ë°©í–¥í‚¤: ì´ë™ / Enter: ì„ íƒ í™•ì • / ESC: ë©”ì¸ ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸°");
         }
     }
 }

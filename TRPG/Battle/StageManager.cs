@@ -1,4 +1,4 @@
-﻿using Game.Data.Models;
+using Game.Data.Models;
 using Game.Units;
 using System.Runtime.InteropServices;
 

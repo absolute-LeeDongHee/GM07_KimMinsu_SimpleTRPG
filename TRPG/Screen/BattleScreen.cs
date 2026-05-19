@@ -1,10 +1,13 @@
-﻿
 
-using Game.Units;
+
+using Game.Actions;
 using Game.Battle;
+using Game.Data.Models;
 using Game.Enums;
 using Game.Input;
-using Game.Actions;
+using Game.Units;
+using System;
+using System.Runtime.InteropServices;
 
 namespace Game.Screen
 {
@@ -13,11 +16,13 @@ namespace Game.Screen
         private Player player;
         private StageManager stageManager;
         private List<Monster> enemies = new();
+        private List<SkillData> playerSkills = new();
 
-        public BattleScreen(Player player, StageManager stageManager)
+        public BattleScreen(Player player, StageManager stageManager, List<SkillData> skills)
         {
             this.player = player;
             this.stageManager = stageManager;
+            playerSkills = skills;
         }
 
         public void ShowBattle()
@@ -66,18 +71,7 @@ namespace Game.Screen
             int selectedIndex = 0;
             while (true)
             {
-                Console.Clear();
-                Console.WriteLine($"=====스테이지 {stageManager.CurrentStage}=====");
-                Console.WriteLine();
-                
-                RenderMonster(enemies, -1); // 행동 선택 시에는 적 선택이 아니므로 -1을 매개변수로 전달하여 커서가 보이지 않도록 함
-
-                Console.WriteLine();
-                Console.WriteLine("=================================================");
-                Console.WriteLine($"{player.Name}");
-                Console.WriteLine($"HP: {player.CurrentHp}/{player.MaxHp.TotalStat}");
-                Console.WriteLine("=================================================");
-                Console.WriteLine();
+                RenderBattle(enemies, -1);
 
                 for (int i = 0; i < actions.Length; i++)
                 {
@@ -126,20 +120,75 @@ namespace Game.Screen
             }
         }
 
-        private BattleAction DecisionAction(int idx)
+        public SkillData? SelectSkill()
+        {
+            List<SkillData> skills = playerSkills;
+            int selectedIndex = 0;
+
+            while (true)
+            {
+                RenderBattle(enemies, -1);
+
+                for (int i = 0; i < skills.Count; i++)
+                {
+                    string cursor = i == selectedIndex ? ">" : " ";
+                    Console.WriteLine($"{cursor} {skills[i].Id}");
+                }
+                Console.WriteLine();
+                Console.WriteLine($"{skills[selectedIndex].Description}");
+                KeyInput key = InputManager.ReadKeyboard();
+                switch (key)
+                {
+                    case KeyInput.Up:
+                        selectedIndex = (selectedIndex - 1 + skills.Count) % skills.Count;
+                        break;
+                    case KeyInput.Down:
+                        selectedIndex = (selectedIndex + 1) % skills.Count;
+                        break;
+                    case KeyInput.Confirm:
+                        SkillData skill = skills[selectedIndex];
+                        return skill;
+                    case KeyInput.Cancel:
+                        return null;
+                }
+            }
+        }
+
+        private BattleAction? DecisionAction(int idx)
         {
             switch (idx)
             {
                 case 0:
                     return new BasicAttack();
                 case 1:
-                    return new UseSkill();
+                    SkillData? useSkill = SelectSkill();
+                    if (useSkill == null)
+                        return null;
+                    return DecisionSkill(useSkill);
                 case 2:
                     // 아이템 선택 화면으로 이동
                     return new UseItem();
                 default:
                     return null;
             }
+        }
+
+        private BattleAction? DecisionSkill(SkillData skill)
+        {
+            if (skill.SkillType == "Buff")
+            {
+                return new BuffSkillAction(skill);
+            }
+            else if (skill.TargetType == "SingleTarget")
+            {
+                return new SingleTargetAttack(skill);
+            }
+            else if (skill.TargetType == "AllTargets")
+            {
+                return new AllTargetAttack(skill);
+            }
+
+            return null;
         }
 
         private void RenderBattle(List<Monster> enemies, int idx)
@@ -155,7 +204,9 @@ namespace Game.Screen
             Console.WriteLine("=================================================");
             Console.WriteLine($"{player.Name}");
             Console.WriteLine($"HP: {player.CurrentHp}/{player.MaxHp.TotalStat}");
+            Console.WriteLine($"MP: {player.CurrentMp}/{player.MaxMp}");
             Console.WriteLine("=================================================");
+            Console.WriteLine();
         }
 
         // 전투 주인 적을 가로로 나열하여 렌더링하는 함수

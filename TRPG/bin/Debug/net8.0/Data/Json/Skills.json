@@ -1,0 +1,52 @@
+[
+	{
+		"Id": "돌진",
+		"SkillType": "Damage",
+		"Description": "적에게 돌진하여 피해를 입히고 강한 피해를 입힙니다.",
+		"PowerMultiplier": 1.5,
+		"Cost": 5,
+		"TargetType": "SingleTarget"
+	},
+	{
+		"Id": "방어 태세",
+		"SkillType": "Buff",
+		"Description": "방어 자세를 취해 일시적으로 방어력이 증가합니다.",
+		"DefMultiplier": 1.4,
+		"Cost": 5,
+		"TargetType": "Self",
+		"Duration": 3
+	},
+	{
+		"Id": "암살",
+		"SkillType": "Damage",
+		"Description": "재빠른 움직임으로 암살을 시도합니다.",
+		"PowerMultiplier": 1.7,
+		"Cost": 5,
+		"TargetType": "SingleTarget"
+	},
+	{
+		"Id": "뒤를 노려라",
+		"SkillType": "Buff",
+		"Description": "급소를 공격하기 위해 적의 뒤를 노립니다. 일시적으로 크리티컬 확률이 증가합니다.",
+		"CritMultiplier": 1.8,
+		"Cost": 5,
+		"TargetType": "Self",
+		"Duration": 3
+	},
+	{
+		"Id": "파이어볼",
+		"SkillType": "Damage",
+		"Description": "적에게 파이어볼을 시전하여 피해를 입힙니다.",
+		"PowerMultiplier": 1.5,
+		"Cost": 5,
+		"TargetType": "SingleTarget"
+	},
+	{
+		"Id": "메테오",
+		"SkillType": "Damage",
+		"Description": "메테오를 시전하여 모든 적에게 피해를 입힙니다.",
+		"PowerMultiplier": 1.2,
+		"Cost": 7,
+		"TargetType": "AllTargets"
+	}
+]

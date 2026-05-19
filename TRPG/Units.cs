@@ -5,16 +5,13 @@ using System.Transactions;
 using Game.Actions;
 using Game.Data;
 using Utils;
+using Game.Battle;
 
 namespace Game.Units
 {
     public class Stat
     {
-
-        // Á÷¾÷°ú ·¹º§¿¡ µû¸¥ ±âº» ½ºÅÈ
         public int BaseStat { get; private set; }
-
-        // ¿ø·¡ Á÷¾÷ ÃÊ±â ½ºÅÈ
         private int growthStat;
         public int BonusStat { get; private set; }
         public int TotalStat { get { return BaseStat + BonusStat; } }
@@ -36,7 +33,6 @@ namespace Game.Units
             BonusStat -= bonus;
         }
 
-        // ·¹º§¾÷ ½Ã ½ºÅÈ Áõ°¡ °è»ê
         public void UpdateStatByLevel(int level)
         {
             if (level > 1)
@@ -49,6 +45,7 @@ namespace Game.Units
             }
         }
     }
+
     public abstract class Unit
     {
         public string Name { get; protected set; }
@@ -58,8 +55,8 @@ namespace Game.Units
         public Stat Def { get; protected set; }
         public Stat Spd { get; protected set; }
         public Stat Crit { get; protected set; }
-
         public UnitState State { get; protected set; }
+
         public Unit(string name, int maxHealth, int attack, int defense, int speed, int critical)
         {
             Name = name;
@@ -72,7 +69,6 @@ namespace Game.Units
             State = UnitState.Alive;
         }
 
-        // °¢ À¯´ÖÀº ÅÏ¸¶´Ù ¾î¶² Çàµ¿À» ÇÒÁö °áÁ¤ÇÑ´Ù.
         public void ExecuteBattleAction(BattleAction action, Unit target)
         {
             action.Execute(this, target);
@@ -82,14 +78,13 @@ namespace Game.Units
         {
             if (dmg == 0)
             {
-                Console.WriteLine($"{Name}Àº(´Â)°ø°İÀ» ¿ÏÀüÈ÷ ¸·¾Æ³Â´Ù.");
+                Console.WriteLine($"{Name}ì€(ëŠ”)ê³µê²©ì„ ì™„ì „íˆ ë§‰ì•„ëƒˆë‹¤.");
             }
             else
             {
                 CurrentHp = Math.Max(0, CurrentHp - dmg);
+                Console.WriteLine($"{Name}ì´(ê°€) {dmg}ì˜ í”¼í•´ë¥¼ ì…ì—ˆë‹¤! ë‚¨ì€ HP: {CurrentHp}/{MaxHp.TotalStat}");
 
-                Console.WriteLine($"{Name}ÀÌ(°¡) {dmg}ÀÇ ÇÇÇØ¸¦ ÀÔ¾ú´Ù! ³²Àº HP: {CurrentHp}/{MaxHp.TotalStat}");
-                
                 if (CurrentHp <= 0)
                 {
                     Die();
@@ -100,41 +95,50 @@ namespace Game.Units
         public virtual void Die()
         {
             State = UnitState.Dead;
-            Console.WriteLine($"{Name}ÀÌ(°¡) »ç¸ÁÇß´Ù.");
+            Console.WriteLine($"{Name}ì´(ê°€) ì‚¬ë§í–ˆë‹¤.");
         }
     }
 
-    public class Player : Unit
+    public class Player : Unit, IUsableSkill
     {
         private int level = 1;
         private int exp = 0;
+        public int MaxMp { get; private set; }
+        public int CurrentMp { get; private set; }
         public string JobId { get; }
-        public Player(string name, JobData job) : base(name, job.MaxHpBonus, job.AtkBonus, job.DefBonus, job.SpdBonus, job.CritBonus) 
+        public string[] SkillIds { get; private set; }
+        public BuffController BuffController { get; }
+
+        public Player(string name, JobData job) : base(name, job.MaxHpBonus, job.AtkBonus, job.DefBonus, job.SpdBonus, job.CritBonus)
         {
             JobId = job.Id;
+            SkillIds = job.SkillIds;
+            MaxMp = job.MaxMpBonus;
+            CurrentMp = MaxMp;
+            BuffController = new BuffController();
         }
 
         public override void Die()
         {
-            Console.WriteLine($"´ç½ÅÀº ÀüÅõ¿¡¼­ ÆĞ¹èÇß½À´Ï´Ù...");
+            Console.WriteLine("ë‹¹ì‹ ì€ ì „íˆ¬ì—ì„œ íŒ¨ë°°í–ˆìŠµë‹ˆë‹¤...");
             State = UnitState.Dead;
         }
 
         public void GainExp(int amount)
         {
             exp += amount;
-            Console.WriteLine($"{amount}ÀÇ °æÇèÄ¡¸¦ È¹µæÇß´Ù!");
+            Console.WriteLine($"{amount}ì˜ ê²½í—˜ì¹˜ë¥¼ íšë“í–ˆë‹¤!");
             CheckLevelUp();
-            Console.WriteLine($"ÇöÀç °æÇèÄ¡: {exp}/{ExpTable.GetExpForLevel(level+1)}");
+            Console.WriteLine($"í˜„ì¬ ê²½í—˜ì¹˜: {exp}/{ExpTable.GetExpForLevel(level + 1)}");
         }
+
         private void CheckLevelUp()
         {
             while (exp >= ExpTable.GetExpForLevel(level + 1))
             {
                 exp -= ExpTable.GetExpForLevel(level + 1);
                 level++;
-                Console.WriteLine($"·¹º§¾÷! ÇöÀç ·¹º§: {level}");
-                // ·¹º§¾÷ ½Ã ½ºÅÈ Áõ°¡
+                Console.WriteLine($"ë ˆë²¨ì—…! í˜„ì¬ ë ˆë²¨: {level}");
                 MaxHp.UpdateStatByLevel(level);
                 Atk.UpdateStatByLevel(level);
                 Def.UpdateStatByLevel(level);
@@ -143,35 +147,50 @@ namespace Game.Units
             }
         }
 
-        // ¾ÆÀÌÅÛ ±¸ÇöÀ» ¾ÆÁ÷ ¸øÇØ¼­ ÀÓ½Ã·Î ½ºÅ×ÀÌÁö Å¬¸®¾î ½Ã¸¶´Ù Ã¼·Â È¸º¹ÇÏ´Â º¸»ó ½Ã½ºÅÛÀ» ¸¸µé¾úÀ½.
         public void HealAfterStageClear()
         {
-            int healAmount = (int)(MaxHp.TotalStat * 0.3); // ÃÖ´ë Ã¼·ÂÀÇ 30% È¸º¹
+            int healAmount = (int)(MaxHp.TotalStat * 0.3);
             CurrentHp = Math.Min(MaxHp.TotalStat, CurrentHp + healAmount);
         }
 
+        public bool UseSkill(int cost)
+        {
+            if (CurrentMp >= cost)
+            {
+                CurrentMp -= cost;
+                return true;
+            }
+
+            Console.WriteLine("MPê°€ ë¶€ì¡±í•˜ì—¬ ìŠ¤í‚¬ì„ ì‚¬ìš©í•  ìˆ˜ ì—†ë‹¤.");
+            return false;
+        }
+
+        public void TickBuffs()
+        {
+            BuffController.Tick();
+        }
     }
 
     public class Monster : Unit
     {
-        // ¸ó½ºÅÍ µ¥ÀÌÅÍ ÂüÁ¶¿ë ÇÊµå
         public MonsterData Data { get; }
         public int ExpReward { get; }
+
         public Monster(MonsterData monsterData, int stage)
-                : base(monsterData.Id, 
-                        Stagescaling.ScaleHp(monsterData.MaxHp, stage), 
-                        Stagescaling.ScaleAtk(monsterData.Atk, stage), 
-                        Stagescaling.ScaleDef(monsterData.Def, stage), 
-                        Stagescaling.ScaleSpd(monsterData.Spd, stage), 
-                        monsterData.Crit)
+            : base(monsterData.Id,
+                    StageScaling.ScaleHp(monsterData.MaxHp, stage),
+                    StageScaling.ScaleAtk(monsterData.Atk, stage),
+                    StageScaling.ScaleDef(monsterData.Def, stage),
+                    StageScaling.ScaleSpd(monsterData.Spd, stage),
+                    monsterData.Crit)
         {
             Data = monsterData;
-            ExpReward = Stagescaling.ScaleExp(monsterData.Exp, stage);
+            ExpReward = StageScaling.ScaleExp(monsterData.Exp, stage);
         }
 
         public override void Die()
         {
-            Console.WriteLine($"{Name}À»(¸¦) ¹°¸®ÃÆ´Ù!");
+            Console.WriteLine($"{Name}ì„(ë¥¼) ë¬¼ë¦¬ì³¤ë‹¤!");
             State = UnitState.Dead;
         }
     }

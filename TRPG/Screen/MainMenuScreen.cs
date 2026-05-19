@@ -35,11 +35,11 @@ namespace Game.Screen
             Console.WriteLine("=== TRPG Main Menu ===");
             Console.WriteLine();
 
-            RenderMenuItem(MainMenuOpt.NewGame, selectedOpt, "»õ·Î¿î °ÔÀÓ");
+            RenderMenuItem(MainMenuOpt.NewGame, selectedOpt, "ìƒˆë¡œìš´ ê²Œìž„");
             Console.WriteLine();
-            RenderMenuItem(MainMenuOpt.Continue, selectedOpt, "°ÔÀÓ ºÒ·¯¿À±â");
+            RenderMenuItem(MainMenuOpt.Continue, selectedOpt, "ê²Œìž„ ë¶ˆëŸ¬ì˜¤ê¸°");
             Console.WriteLine();
-            RenderMenuItem(MainMenuOpt.Exit, selectedOpt, "°ÔÀÓ Á¾·á");
+            RenderMenuItem(MainMenuOpt.Exit, selectedOpt, "ê²Œìž„ ì¢…ë£Œ");
 
         }
 

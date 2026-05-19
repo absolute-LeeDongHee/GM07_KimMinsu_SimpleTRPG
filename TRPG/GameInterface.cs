@@ -2,7 +2,7 @@ using Game.Units;
 
 namespace Game.Interfaces
 {
-    #region À¯´Ö °ü·Ã ÀÎÅÍÆäÀÌ½º
+    #region ìœ ë‹› ê´€ë ¨ ì¸í„°í˜ì´ìŠ¤
     public interface IAttackable
     {
         public void Attack(Unit target);
@@ -18,7 +18,12 @@ namespace Game.Interfaces
     }
     #endregion
 
-    #region ¾ÆÀÌÅÛ °ü·Ã ÀÎÅÍÆäÀÌ½º
+    public interface IUsableSkill
+    {
+        public bool UseSkill(int amount);
+    }
+
+    #region ì•„ì´í…œ ê´€ë ¨ ì¸í„°í˜ì´ìŠ¤
     public interface IUsable
     {
         void Use();
@@ -31,16 +36,21 @@ namespace Game.Interfaces
     }
     #endregion
 
-    #region µ¥ÀÌÅÍ ·Îµå °ü·Ã ÀÎÅÍÆäÀÌ½º
+    #region ë°ì´í„° ë¡œë“œ ê´€ë ¨ ì¸í„°í˜ì´ìŠ¤
     public interface IHasId
     {
         string Id { get; }
     }
     #endregion
 
-    #region ÀüÅõ Çàµ¿ °ü·Ã ÀÎÅÍÆäÀÌ½º
+    #region ì „íˆ¬ í–‰ë™ ê´€ë ¨ ì¸í„°í˜ì´ìŠ¤
     public interface IRequiresTarget
     {
+    }
+
+    public interface IAllTarget
+    {
+        
     }
     #endregion
 }
