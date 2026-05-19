@@ -27,6 +27,9 @@
 ### Framework
 ![.NET](https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 
+## 수정사항
+26.05.19 - 스킬 구현
+
 ## 아키텍쳐
 ```bash
 Program
