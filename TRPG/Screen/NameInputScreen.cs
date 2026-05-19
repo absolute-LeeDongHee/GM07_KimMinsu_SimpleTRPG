@@ -1,4 +1,4 @@
-﻿namespace Game.Screen
+namespace Game.Screen
 {
     public class NameInputScreen
     {

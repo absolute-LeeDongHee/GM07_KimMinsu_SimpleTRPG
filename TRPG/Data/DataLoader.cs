@@ -9,9 +9,10 @@ namespace Game.Data
     {
         public static Dictionary<string, JobData> jobs = new Dictionary<string, JobData>();
         public static Dictionary<string, MonsterData> monsters = new Dictionary<string, MonsterData>();
+        public static Dictionary<string, SkillData> skills = new Dictionary<string, SkillData>();
 
 
-        // Á÷¾÷, ¸ó½ºÅÍ, ¾ÆÀÌÅÛ, ½ºÅ³ µî °íÀ¯ÀÇ string Çü½ÄÀÇ ID¸¦ °¡Áø µ¥ÀÌÅÍµéÀ» JSON ÆÄÀÏ¿¡¼­ ÀĞ¾î¿Í Dictionary ÇüÅÂ·Î ¹İÈ¯
+        // ì§ì—…, ëª¬ìŠ¤í„°, ì•„ì´í…œ, ìŠ¤í‚¬ ë“± ê³ ìœ ì˜ string í˜•ì‹ì˜ IDë¥¼ ê°€ì§„ ë°ì´í„°ë“¤ì„ JSON íŒŒì¼ì—ì„œ ì½ì–´ì™€ Dictionary í˜•íƒœë¡œ ë°˜í™˜
         public static Dictionary<string, T> LoadData<T>(string filePath) where T : IHasId
         {
 
@@ -22,7 +23,7 @@ namespace Game.Data
 
             if (dataList == null)
             {
-                Console.WriteLine($"{filePath}·Î ºÎÅÍ µ¥ÀÌÅÍ¸¦ ÀĞ¾î¿ÀÁö ¸øÇß½À´Ï´Ù.");
+                Console.WriteLine($"{filePath}ë¡œ ë¶€í„° ë°ì´í„°ë¥¼ ì½ì–´ì˜¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
                 return new Dictionary<string, T>();
             }
 
@@ -35,3 +36,4 @@ namespace Game.Data
         }
     }
 }
+

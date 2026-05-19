@@ -2,7 +2,7 @@ using Game.Units;
 
 namespace Utils
 {
-    #region ÀüÅõ °ü·Ã À¯Æ¿¸®Æ¼
+    #region ì „íˆ¬ ê´€ë ¨ ìœ í‹¸ë¦¬í‹°
     public static class BattleUtils
     {
         private static Random rand = new Random();
@@ -17,13 +17,26 @@ namespace Utils
             return damage;
         }
 
+        public static int SkillDamage(Unit attacker, Unit defender, double? powerMultiplier, bool isCritical)
+        {
+            // ê°€ë…ì„±ì„ ìœ„í•´ ìŠ¤í‚¬ ê³µê²©ì€ ë°ë¯¸ì§€ë¥¼ ë¨¼ì € ê³„ì‚°.
+            int damage = (int)(attacker.Atk.TotalStat * powerMultiplier) - defender.Def.TotalStat;
+
+            if (isCritical)
+            {
+                damage = (int)(damage * 1.5f);
+            }
+
+            return Math.Max(0, damage);
+        }
+
         public static bool IsCriticalHit(Unit attacker)
         {
             return rand.Next(0, 100) < attacker.Crit.TotalStat;
         }
     }
     #endregion
-    #region ¸ó½ºÅÍ »ı¼º °ü·Ã À¯Æ¿¸®Æ¼
+    #region ëª¬ìŠ¤í„° ìƒì„± ê´€ë ¨ ìœ í‹¸ë¦¬í‹°
     public static class StageScaling
     {
         public static int ScaleHp(int baseValue, int stage)
@@ -51,7 +64,7 @@ namespace Utils
             return ScaleStat(baseValue, stage, 0.10);
         }
 
-        // ½ºÅ×ÀÌÁö¿¡ µû¸¥ ¸ó½ºÅÍ ½ºÅÈ Áõ°¡ ·ÎÁ÷
+        // ìŠ¤í…Œì´ì§€ì— ë”°ë¥¸ ëª¬ìŠ¤í„° ìŠ¤íƒ¯ ì¦ê°€ ë¡œì§
         private static int ScaleStat(int baseValue, int stage, double growthRate)
         {
             double scale = 1.0 + (stage - 1) * growthRate;

@@ -7,15 +7,15 @@ namespace Game.Battle
 {
     /*
     [BattleManager]
-    Àü¹İÀûÀÎ ÀüÅõ ·ÎÁ÷À» °ü¸®ÇÏ´Â Å¬·¡½º
+    ì „ë°˜ì ì¸ ì „íˆ¬ ë¡œì§ì„ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
     */
     class BattleManager
     {
         private Player player;
-        private List<Monster> currentEnemies; // ÇöÀç ÀüÅõ¿¡ Âü¿© ÁßÀÎ Àû ¸®½ºÆ®
+        private List<Monster> currentEnemies; // í˜„ì¬ ì „íˆ¬ì— ì°¸ì—¬ ì¤‘ì¸ ì  ë¦¬ìŠ¤íŠ¸
         private TurnManager turnManager;
-        private Func<BattleAction>? playerActionFunc; // ÇÃ·¹ÀÌ¾î Çàµ¿ ¼±ÅÃ ÇÔ¼ö.
-        private Func<List<Monster>, Monster?> selectTargetFunc; // °ø°İ ´ë»ó ¼±ÅÃ ÇÔ¼ö. ¼±ÅÃÇÑ Å¸°ÙÀ» BattleScreen¿¡¼­ Àü´Ş¹Ş¾Æ¼­ Ã³¸®.
+        private Func<BattleAction>? playerActionFunc; // í”Œë ˆì´ì–´ í–‰ë™ ì„ íƒ í•¨ìˆ˜.
+        private Func<List<Monster>, Monster?> selectTargetFunc; // ê³µê²© ëŒ€ìƒ ì„ íƒ í•¨ìˆ˜. ì„ íƒí•œ íƒ€ê²Ÿì„ BattleScreenì—ì„œ ì „ë‹¬ë°›ì•„ì„œ ì²˜ë¦¬.
 
         public BattleManager(Player player, List<Monster> enemies,
             Func<BattleAction> playerActionFunc,
@@ -30,20 +30,35 @@ namespace Game.Battle
 
         public void StartBattle()
         {
-            // ÀüÅõ ½ÃÀÛ ¼ø¼­¸¦ Á¤ÇÏ±â À§ÇØ ÇÃ·¹ÀÌ¾î¿Í ÀûµéÀ» Unit Å¸ÀÔÀ¸·Î ¹­¾î¼­ ¸®½ºÆ®¿¡ Ãß°¡
-            // ±× ÈÄ TurnManagerÀÇ TurnSetup ¸Ş¼­µå¿¡ Àü´ŞÇÏ¿© ÅÏ ¼ø¼­¸¦ °áÁ¤
+            // ì „íˆ¬ ì‹œì‘ ìˆœì„œë¥¼ ì •í•˜ê¸° ìœ„í•´ í”Œë ˆì´ì–´ì™€ ì ë“¤ì„ Unit íƒ€ì…ìœ¼ë¡œ ë¬¶ì–´ì„œ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
+            // ê·¸ í›„ TurnManagerì˜ TurnSetup ë©”ì„œë“œì— ì „ë‹¬í•˜ì—¬ í„´ ìˆœì„œë¥¼ ê²°ì •
             List<Unit> units = new List<Unit>();
             units.Add(player);
             units.AddRange(currentEnemies);
             turnManager.TurnSetup(units);
-            // °£´ÜÇÑ ÅÏÁ¦ ÀüÅõ ·ÎÁ÷
+
+            // ê°„ë‹¨í•œ í„´ì œ ì „íˆ¬ ë¡œì§
             while (player.State == UnitState.Alive && currentEnemies.Count > 0)
             {
-                // ÅÏÀ» ÁøÇàÇÒ À¯´ÖÀ» TurnManager¿¡¼­ °¡Á®¿Â´Ù
+                // í„´ì„ ì§„í–‰í•  ìœ ë‹›ì„ TurnManagerì—ì„œ ê°€ì ¸ì˜¨ë‹¤
                 Unit? currentUnit = turnManager.NextTurn();
-                TurnProcess(currentUnit);
+                bool isActed = TurnProcess(currentUnit);
 
-                // ÅÏ Á¾·á ÈÄ Á×Àº ¸ó½ºÅÍ°¡ ÀÖ´ÂÁö È®ÀÎÇÏ¿© TurnManager¿¡¼­ Á¦°Å
+                if (isActed)
+                {
+                    turnManager.IncreaseActedCount();
+                    
+                }
+
+                turnManager.CheckRoundFinished();
+
+                if (turnManager.IsRoundFinished)
+                {
+                    // ë¼ìš´ë“œê°€ ëë‚  ë•Œë§ˆë‹¤ ë²„í”„ ì§€ì† ì‹œê°„ ê°ì†Œ
+                    player.BuffController.Tick();
+                }
+
+                // í„´ ì¢…ë£Œ í›„ ì£½ì€ ëª¬ìŠ¤í„°ê°€ ìˆëŠ”ì§€ í™•ì¸í•˜ì—¬ TurnManagerì—ì„œ ì œê±°
                 foreach (Monster m in currentEnemies)
                 {
                     if (m.State == UnitState.Dead)
@@ -60,26 +75,31 @@ namespace Game.Battle
                 }
                 else if (currentEnemies.Count == 0)
                 {
-                    Console.WriteLine("¸ğµç ÀûÀ» Ã³Ä¡Çß½À´Ï´Ù! ½Â¸®!");
+                    Console.WriteLine("ëª¨ë“  ì ì„ ì²˜ì¹˜í–ˆìŠµë‹ˆë‹¤! ìŠ¹ë¦¬!");
                     player.HealAfterStageClear();
                     break;
                 }
             }
         }
 
-        public void TurnProcess(Unit? unit)
+        public bool TurnProcess(Unit? unit)
         {
             if (unit == null || unit.State == UnitState.Dead)
             {
-                return;
+                return false;
             }
 
             if (unit is Player p)
             {
-                // ÇÃ·¹ÀÌ¾î°¡ Çàµ¿À» ¼±ÅÃÇÔ.
+                // í”Œë ˆì´ì–´ê°€ í–‰ë™ì„ ì„ íƒí•¨.
                 BattleAction? action = playerActionFunc?.Invoke();
 
-                // Çàµ¿ÀÌ Å¸°ÙÀÌ ÇÊ¿äÇÑ Çàµ¿ÀÎÁö È®ÀÎÇÏ¿© Å¸°Ù ¼±ÅÃ ÇÔ¼ö È£Ãâ
+                if (action == null)
+                {
+                    return false;
+                }
+
+                // í–‰ë™ì´ íƒ€ê²Ÿì´ í•„ìš”í•œ í–‰ë™ì¸ì§€ í™•ì¸í•˜ì—¬ íƒ€ê²Ÿ ì„ íƒ í•¨ìˆ˜ í˜¸ì¶œ
                 if (action is IRequiresTarget)
                 {
                     Monster? target = selectTargetFunc?.Invoke(currentEnemies);
@@ -88,28 +108,44 @@ namespace Game.Battle
                         p.ExecuteBattleAction(action, target);
                         Console.WriteLine();
                         Thread.Sleep(1000);
+
+                        return true;
                     }
                     else
                     {
-                        return;
+                        return false;
                     }
                 }
-                // Å¸°ÙÀÌ ÇÊ¿ä ¾ø´Â Çàµ¿ÀÎ °æ¿ì ¹Ù·Î ½ÇÇà
-                // ¾Æ¸¶ Æ÷¼Ç »ç¿ë, Èú, ¹öÇÁ Çàµ¿ ÀÌ·± ¾ÖµéÀÌ µÉµí
+                else if (action is IAllTarget)
+                {
+                    List<Monster> targets = currentEnemies;
+                    action.Execute(p, null, targets);
+                    Console.WriteLine();
+                    Thread.Sleep(1000);
+                    return true;
+                }
+                // íƒ€ê²Ÿì´ í•„ìš” ì—†ëŠ” í–‰ë™ì¸ ê²½ìš° ë°”ë¡œ ì‹¤í–‰
+                // ì•„ë§ˆ í¬ì…˜ ì‚¬ìš©, í, ë²„í”„ í–‰ë™ ì´ëŸ° ì• ë“¤ì´ ë ë“¯
                 else
                 {
                     p.ExecuteBattleAction(action, p);
                     Console.WriteLine();
                     Thread.Sleep(500);
+
+                    return true;
                 }
             }
             else if (unit is Monster monster)
             {
-                // ¸ó½ºÅÍÀÇ Çàµ¿Àº ÀÏ´Ü ±âº» °ø°İÀ¸·Î...
+                // ëª¬ìŠ¤í„°ì˜ í–‰ë™ì€ ì¼ë‹¨ ê¸°ë³¸ ê³µê²©ìœ¼ë¡œ...
                 monster.ExecuteBattleAction(new BasicAttack(), player);
                 Console.WriteLine();
                 Thread.Sleep(1000);
+                
+                return true;
             }
+
+            return false;
         }
     }
 }

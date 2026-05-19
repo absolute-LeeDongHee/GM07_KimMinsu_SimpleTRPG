@@ -35,7 +35,11 @@ Program
    │  ├─ DataLoader
    │  ├─ JobData
    │  ├─ MonsterData
-   │  └─ ExpTable
+   │  ├─ SkillData
+   │  ├─ ExpTable
+   │  ├─ Jobs.json
+   │  ├─ Monsters.json
+   │  └─ Skills.json
    │
    ├─ Screen: 게임을 구성하는 화면 관련 폴더
    │  ├─ MainMenuScreen
@@ -46,7 +50,8 @@ Program
    ├─ Battle: 전투 진행 로직
    │  ├─ StageManager
    │  ├─ BattleManager
-   │  └─ TurnManager
+   │  ├─ TurnManager
+   │  └─ BuffController
    │
    ├─ Units: 유닛의 스탯, 행동
    │  ├─ Unit
@@ -57,6 +62,9 @@ Program
    ├─ Actions: 유닛의 전투 행동 구현
    │  ├─ BattleAction
    │  ├─ BasicAttack
+   │  ├─ SingleTargetAttack
+   │  ├─ AllTargetAttack
+   │  ├─ BuffSkillAction
    │  ├─ UseSkill
    │  └─ UseItem
    │
@@ -66,9 +74,10 @@ Program
    ├─ Interfaces: 게임에 필요한 인터페이스의 집합
    │  ├─ IDamageable
    │  ├─ IHasId
-   │  └─ IRequiresTarget
+   │  ├─ IRequiresTarget
+   │  └─ IUsableSkill
    │
    └─ Utils: 게임 진행 유틸 관련
       ├─ BattleUtils
-      └─ Stagescaling
+      └─ StageScaling
 ```

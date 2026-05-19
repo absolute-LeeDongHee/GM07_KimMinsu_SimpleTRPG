@@ -19,6 +19,11 @@ namespace Game.Enums
         Dead,
     }
     
+    public enum BuffType
+    {
+        DefUp,
+        CritUp,
+    }
 
     public enum MainMenuOpt
     {
