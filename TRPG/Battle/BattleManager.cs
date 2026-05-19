@@ -41,14 +41,19 @@ namespace Game.Battle
             while (player.State == UnitState.Alive && currentEnemies.Count > 0)
             {
                 // 턴을 진행할 유닛을 TurnManager에서 가져온다
-                Unit? currentUnit = turnManager.NextTurn();
+                Unit? currentUnit = turnManager.GetCurrentUnit();
                 bool isActed = TurnProcess(currentUnit);
 
-                if (isActed)
+                if (!isActed)
+                {
+                    continue;
+                }
+                else
                 {
                     turnManager.IncreaseActedCount();
-                    
+                    turnManager.NextTurn();
                 }
+                    
 
                 turnManager.CheckRoundFinished();
 

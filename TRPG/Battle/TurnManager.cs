@@ -27,20 +27,27 @@ namespace Game.Battle
             AliveUnitCount = turnQueue.Count;
         }
 
-        // 다음 턴을 진행하는 메서드
-        // 현재 턴인 유닛을 큐에서 꺼냄
-        // 만약 큐가 비어있다면 null을 반환
-        public Unit? NextTurn()
+        // 현재 턴을 진행할 유닛을 반환하는 메서드
+        public Unit? GetCurrentUnit()
         {
             if (turnQueue.Count == 0)
             {
-                return null; // 턴이 없으면 null 반환
+                return null;
+            }
+            return turnQueue.Peek();
+        }
+
+        // 유닛이 성공적으로 행동을 수행했을 때, 다음 유닛의 턴으로 넘기는 메서드
+        public void NextTurn()
+        {
+            if (turnQueue.Count == 0)
+            {
+                return;
             }
 
             Unit currentUnit = turnQueue.Dequeue();
             turnQueue.Enqueue(currentUnit);
 
-            return currentUnit;
         }
 
         public void RemoveUnit(Unit unit)

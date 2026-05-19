@@ -103,6 +103,9 @@ namespace Game.Screen
             {
                 RenderBattle(enemies, selectedIndex);
 
+                int msgRow = Console.CursorTop;
+                Console.WriteLine("공격할 적을 선택해주세요.");
+
                 KeyInput key = InputManager.ReadKeyboard();
                 switch (key)
                 {
@@ -113,6 +116,10 @@ namespace Game.Screen
                         selectedIndex = (selectedIndex + 1) % enemies.Count;
                         break;
                     case KeyInput.Confirm:
+                        // 타겟을 선택하면 타겟 선택 메시지를 지워서 전투 메시지와 함께 출력되지 않게 처리.
+                        Console.SetCursorPosition(0, msgRow);
+                        Console.WriteLine(new string(' ', Console.WindowWidth));
+                        Console.SetCursorPosition(0, msgRow);
                         return enemies[selectedIndex];
                     case KeyInput.Cancel:
                         return null;
